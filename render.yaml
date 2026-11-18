@@ -1,0 +1,26 @@
+# Render blueprint: one web service hosts the TV page, the phone page, the API and the SSE stream.
+services:
+  - type: web
+    name: khel-saathi
+    runtime: node
+    plan: free
+    buildCommand: npm ci --include=dev && npm run build
+    startCommand: npm start
+    healthCheckPath: /api/health
+    envVars:
+      - key: NODE_VERSION
+        value: 22
+      - key: PUBLIC_URL
+        sync: false
+      - key: LLM_BASE_URL
+        value: https://api.cerebras.ai/v1
+      - key: LLM_API_KEY
+        sync: false
+      - key: LLM_MODEL
+        value: gpt-oss-120b
+      - key: LLM2_BASE_URL
+        value: https://api.groq.com/openai/v1
+      - key: LLM2_API_KEY
+        sync: false
+      - key: LLM2_MODEL
+        value: openai/gpt-oss-120b
