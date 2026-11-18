@@ -1,5 +1,5 @@
-// The public landing page. Cinematic first screen (race footage behind the promise), then one idea per section:
-// what the jargon problem feels like, how it works, the demo, the promises, and how it is built (for reviewers).
+// The public landing page, laid out like a motorsport site: a two-tier header, a race bar, quick-link chips, then a
+// hero grid (a big video tile and four story tiles). Below: jargon ticker, how it works, demo, promises, under the hood.
 import { useEffect, useRef, useState } from 'react';
 import { api } from '../api';
 import { Brand, Icon } from './kit';
@@ -11,9 +11,23 @@ const DECODE: [string, string][] = [
   ['"Shades of 2016"', 'Isi track pe, isi baarish mein, pehle bhi hua tha'], ['Pit window', 'Stop karne ka sahi waqt'],
 ];
 
+const TILES = [
+  { img: '/bg/tile-app.jpg', tag: 'Demo', title: 'Watch Saathi explain a wet, wild race in two minutes', href: '#demo' },
+  { img: '/bg/tile-pit.jpg', tag: 'Explained', title: 'Lap 32 pe red flag: why the stay-out call paid off', href: '#how' },
+  { img: '/bg/tile-battle.jpg', tag: 'Jargon', title: '"Box, box" means pit now. Saathi decodes the rest', href: '#decode' },
+  { img: '/bg/tile-onboard.jpg', tag: 'Under the hood', title: 'No spoilers, ever: the AI only knows the race so far', href: '#build' },
+];
+
+function useClock() {
+  const [now, setNow] = useState(() => new Date());
+  useEffect(() => { const i = setInterval(() => setNow(new Date()), 15_000); return () => clearInterval(i); }, []);
+  return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: false });
+}
+
 export function Landing() {
   const [busy, setBusy] = useState(false), [err, setErr] = useState(''), [code, setCode] = useState('');
   const start = async () => { setBusy(true); setErr(''); try { location.assign(`/tv/${(await api.createSession()).id}`); } catch { setErr('The race server is waking up (free hosting sleeps). Try again in a few seconds.'); setBusy(false); } };
+  const clock = useClock();
   const video = useRef<HTMLVideoElement>(null);
   const [paused, setPaused] = useState(false);
   useEffect(() => {
@@ -32,44 +46,64 @@ export function Landing() {
     const v = video.current; if (!v) return;
     if (v.paused) { delete v.dataset.userPaused; v.play().catch(() => {}); setPaused(false); } else { v.dataset.userPaused = '1'; v.pause(); setPaused(true); }
   };
+
   return (
     <div className="lp">
-      <header className="lp-nav">
-        <Brand />
-        <nav><a href="#how">How it works</a><a href="#demo">Demo</a><a href="#build">Under the hood</a></nav>
-        <button className="lp-nav-cta" disabled={busy} onClick={start}>Start watching</button>
+      <header className="lp-head">
+        <div className="lp-top">
+          <span className="lp-series">Dream11 FDE · Prototype <Icon name="chev" size={14} /></span>
+          <nav><a href="#how">How it works</a><a href="#demo">Demo</a><a href="#build">Under the hood</a><a href="https://github.com/krrishrastogi05/KhelSaathi-F1-X-Dream11" target="_blank" rel="noreferrer">Code</a></nav>
+          <a className="lp-top-ghost" href="#join">Join with code</a>
+          <button className="lp-top-cta" disabled={busy} onClick={start}>Start watching</button>
+        </div>
+        <div className="lp-main">
+          <Brand />
+          <nav><button onClick={start} disabled={busy}>Watch party</button><a href="#decode">Decoder</a><a href="#how">Learn F1</a><a href="#demo">Demo</a><a href="#build">Tech</a></nav>
+        </div>
+        <div className="lp-race">
+          <div><span className="lp-gp"><span className="lp-flag" aria-hidden />São Paulo <Icon name="chev" size={12} /></span><b>RACE REPLAY</b><i /><b className="mono">69 L · 21 MOMENTS</b></div>
+          <div className="lp-time"><span className="dot" /><b>MY TIME</b><b className="mono">{clock}</b><span className="lp-wet">🌧 Wet race</span></div>
+        </div>
       </header>
 
-      <section className="lp-hero">
-        <video ref={video} className="lp-bg" src="/bg/race-loop.mp4" poster="/bg/race-loop.jpg" autoPlay muted loop playsInline preload="auto" aria-hidden />
-        <div className="lp-shade" aria-hidden />
-        <div className="lp-hero-in">
-          <div className="lp-copy">
+      <nav className="lp-chips" aria-label="Quick links">
+        <button onClick={start} disabled={busy}><Icon name="play" size={15} /> Watch party</button>
+        <a href="#decode"><Icon name="book" size={15} /> Jargon decoder</a>
+        <a href="#how"><Icon name="spark" size={15} /> New to F1?</a>
+        <a href="#demo"><Icon name="chart" size={15} /> Demo</a>
+        <a href="#build"><Icon name="flag" size={15} /> No spoilers</a>
+      </nav>
+
+      <section className="lp-grid">
+        <article className="lp-feature">
+          <video ref={video} className="lp-bg" src="/bg/race-loop.mp4" poster="/bg/race-loop.jpg" autoPlay muted loop playsInline preload="auto" aria-hidden />
+          <div className="lp-shade" aria-hidden />
+          <div className="lp-feature-in">
             <span className="lp-eyebrow"><i /> Live replay · 2024 São Paulo Grand Prix</span>
-            <h1>The race is on one screen.<br /><em>Understanding is on the other.</em></h1>
-            <p>Your first F1 race, explained by a friend who talks your language. Khel Saathi watches with you and tells you what just happened, why it matters, and what it reminds the experts of.</p>
+            <h1>The race is on one screen. <em>Understanding is on the other.</em></h1>
+            <p>Your first F1 race, explained by a friend who talks your language: what just happened, why it matters, and what it reminds the experts of.</p>
             <div className="lp-ctas">
               <button className="lp-btn primary" disabled={busy} onClick={start}>{busy ? <span className="spinner sm" /> : <Icon name="play" size={18} />} Start the watch party</button>
               <a className="lp-btn ghost" href="#demo">Watch the 2-min demo</a>
             </div>
-            <form className="lp-join" onSubmit={(e) => { e.preventDefault(); if (code.trim()) location.assign(`/m/${code.trim().toLowerCase()}`); }}>
-              <span>Got a code from the TV?</span>
-              <input value={code} onChange={(e) => setCode(e.target.value.replace(/[^a-z0-9]/gi, ''))} placeholder="K7M2QX" maxLength={12} aria-label="Session code" />
-              <button type="submit" aria-label="Join"><Icon name="arrow" size={16} /></button>
-            </form>
             {err && <p className="lp-err">{err}</p>}
           </div>
-          <aside className="lp-card" aria-label="Example Saathi card">
-            <div className="lp-card-top"><span className="m">🚩</span><span>Race-changing moment · lap 32</span></div>
-            <b>Lap 32 pe red flag</b>
-            <p>Race ruk gayi. Rukne ke dauraan teams free mein tyre badal sakti hain, isliye jo bahar rahe, unko fayda.</p>
-            <div className="lp-cricket">🏏 Jaise baarish se match ruk jaaye: sabko reset milta hai.</div>
-            <div className="lp-card-ask"><span>Kaun jeetega?</span><em>Spoiler nahi milega 😉</em></div>
-          </aside>
+          <button className="lp-pause" onClick={toggle} aria-label={paused ? 'Play background video' : 'Pause background video'}><Icon name={paused ? 'play' : 'pause'} size={14} /></button>
+        </article>
+        <div className="lp-tiles">
+          {TILES.map((t) => (
+            <a key={t.title} className="lp-tile" href={t.href}>
+              <span className="lp-tile-img" style={{ backgroundImage: `url(${t.img})` }}><em>{t.tag}</em></span>
+              <b>{t.title}</b>
+            </a>
+          ))}
         </div>
-        <a className="lp-scroll" href="#decode" aria-label="Scroll down"><Icon name="chev" /></a>
-        <button className="lp-pause" onClick={toggle} aria-label={paused ? 'Play background video' : 'Pause background video'}><Icon name={paused ? 'play' : 'pause'} size={14} /></button>
       </section>
+
+      <form id="join" className="lp-joinbar" onSubmit={(e) => { e.preventDefault(); if (code.trim()) location.assign(`/m/${code.trim().toLowerCase()}`); }}>
+        <span>Watching on a TV already? Enter the code shown on it to bring Saathi to this phone.</span>
+        <div><input value={code} onChange={(e) => setCode(e.target.value.replace(/[^a-z0-9]/gi, ''))} placeholder="K7M2QX" maxLength={12} aria-label="Session code" /><button type="submit">Join <Icon name="arrow" size={16} /></button></div>
+      </form>
 
       <section className="lp-decode" id="decode" aria-label="F1 jargon, decoded">
         <div className="lp-track">
