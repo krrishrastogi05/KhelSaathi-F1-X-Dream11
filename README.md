@@ -2,6 +2,8 @@
 
 **The race is on one screen. Understanding is on the other.**
 
+**Live:** [khel-saathi.vercel.app](https://khel-saathi.vercel.app) (app and landing page) · API on Render: `khel-saathi.onrender.com` (free plan: the first request after 15 idle minutes takes about 50 s) · [Demo video](https://khel-saathi.vercel.app/demo/khel-saathi-demo.mp4)
+
 Khel Saathi is a second-screen AI companion for fans who watch a sport for the first time. The TV shows the match. The phone follows the same moment, tells the fan what just happened and why it matters, answers questions with live charts, and learns what the fan already knows.
 
 This proof of concept uses Formula 1: a replay of the **2024 São Paulo Grand Prix** built from real [OpenF1](https://openf1.org) timing data. The race has rain, a virtual safety car, a safety car, a red flag, and Max Verstappen climbing from 17th on the grid. That gives a new fan a lot to learn.
