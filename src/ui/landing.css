@@ -104,3 +104,18 @@ html:has(.lp) { scroll-behavior: smooth; }
   .lp-foot { flex-direction: column; align-items: flex-start; }
 }
 @media (prefers-reduced-motion: reduce) { .lp-bg, .lp-card, .lp-track { animation: none !important; } }
+
+/* short version: one-line facts under the demo, a quiet code link */
+.lp-hero p { font-size: clamp(18px, 2vw, 24px); }
+.lp-codelink { margin-top: 18px; border: 0; background: transparent; padding: 0; color: rgba(255, 255, 255, .7); font: 600 15px 'Titillium Web', sans-serif; text-decoration: underline; text-underline-offset: 4px; }
+.lp-join input::placeholder { color: rgba(255, 255, 255, .45); }
+.lp-card { width: 300px; }
+.lp-demo { padding-top: clamp(48px, 7vw, 80px); }
+.lp-demo video { margin-top: 0; }
+.lp-facts { list-style: none; padding: 0; margin: 22px 0 0; display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; }
+.lp-facts li { display: flex; align-items: center; gap: 10px; padding: 16px 18px; border-radius: 14px; background: #15151e; border: 1px solid var(--line); font-size: 17px; font-weight: 700; }
+.lp-facts span { font-size: 20px; }
+.lp-foot { justify-content: center; text-align: center; }
+.lp-foot a { color: var(--accent2); }
+@media (max-width: 860px) { .lp-facts { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 480px) { .lp-facts { grid-template-columns: 1fr; } }
