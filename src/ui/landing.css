@@ -46,6 +46,8 @@ html:has(.lp) { scroll-behavior: smooth; }
 .lp-card-ask { display: flex; justify-content: space-between; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px solid rgba(255, 255, 255, .08); font-size: 13px; }
 .lp-card-ask span { color: var(--muted); }
 .lp-card-ask em { color: var(--data) !important; font-weight: 700; }
+.lp-pause { position: absolute; right: clamp(16px, 4vw, 48px); bottom: 24px; width: 36px; height: 36px; border-radius: 50%; border: 1px solid rgba(255, 255, 255, .22); background: rgba(0, 0, 0, .4); backdrop-filter: blur(8px); color: rgba(255, 255, 255, .8); display: grid; place-items: center; }
+.lp-pause:hover { color: #fff; background: rgba(0, 0, 0, .6); }
 .lp-scroll { position: absolute; left: 50%; bottom: 22px; transform: translateX(-50%); color: rgba(255, 255, 255, .6); animation: lp-bob 1.8s ease-in-out infinite; }
 @keyframes lp-bob { 50% { transform: translate(-50%, 6px); } }
 

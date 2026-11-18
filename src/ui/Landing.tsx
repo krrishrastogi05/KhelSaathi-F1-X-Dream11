@@ -15,12 +15,23 @@ export function Landing() {
   const [busy, setBusy] = useState(false), [err, setErr] = useState(''), [code, setCode] = useState('');
   const start = async () => { setBusy(true); setErr(''); try { location.assign(`/tv/${(await api.createSession()).id}`); } catch { setErr('The race server is waking up (free hosting sleeps). Try again in a few seconds.'); setBusy(false); } };
   const video = useRef<HTMLVideoElement>(null);
-  useEffect(() => {                                                   // respect reduced motion: keep the poster still
+  const [paused, setPaused] = useState(false);
+  useEffect(() => {
     const v = video.current;
-    // React does not put the muted attribute in the DOM, so browsers may block autoplay: mute and start it here
-    if (v) { v.muted = true; if (matchMedia('(prefers-reduced-motion: reduce)').matches) v.pause(); else v.play().catch(() => {}); }
+    // React does not put the muted attribute in the DOM, so browsers may block autoplay: mute and start it here.
+    // Reduced-motion users still get the footage (only the slow zoom stops, in CSS) and a pause button.
+    const play = () => { if (v && v.paused && !v.dataset.userPaused) v.play().catch(() => {}); };
+    if (v) { v.muted = true; play(); }
+    // phones in low-power mode block autoplay until the first touch or scroll
+    const once = () => { play(); removeEventListener('pointerdown', once); removeEventListener('scroll', once); };
+    addEventListener('pointerdown', once); addEventListener('scroll', once, { passive: true });
     fetch(`${(import.meta.env.VITE_API_URL ?? '').replace(/\/+$/, '')}/api/health`).catch(() => {});   // wake the free server early
+    return () => { removeEventListener('pointerdown', once); removeEventListener('scroll', once); };
   }, []);
+  const toggle = () => {
+    const v = video.current; if (!v) return;
+    if (v.paused) { delete v.dataset.userPaused; v.play().catch(() => {}); setPaused(false); } else { v.dataset.userPaused = '1'; v.pause(); setPaused(true); }
+  };
   return (
     <div className="lp">
       <header className="lp-nav">
@@ -57,6 +68,7 @@ export function Landing() {
           </aside>
         </div>
         <a className="lp-scroll" href="#decode" aria-label="Scroll down"><Icon name="chev" /></a>
+        <button className="lp-pause" onClick={toggle} aria-label={paused ? 'Play background video' : 'Pause background video'}><Icon name={paused ? 'play' : 'pause'} size={14} /></button>
       </section>
 
       <section className="lp-decode" id="decode" aria-label="F1 jargon, decoded">
