@@ -6,6 +6,7 @@ import { createRoot } from 'react-dom/client';
 import { api } from './api';
 import { Broadcast } from './ui/Broadcast';
 import { Companion } from './ui/Companion';
+import { Landing } from './ui/Landing';
 import { Brand, Icon } from './ui/kit';
 import './styles.css';
 
@@ -46,7 +47,7 @@ function App() {
   const [, root, id] = location.pathname.split('/');
   if (root === 'tv' && id) return <Broadcast id={id.toLowerCase()} />;
   if (root === 'm' && id) return <Companion id={id.toLowerCase()} embed={new URLSearchParams(location.search).has('embed')} />;
-  return <Home phone={root === 'm'} />;
+  return root === 'm' ? <Home phone /> : <Landing />;
 }
 
 createRoot(document.getElementById('root')!).render(<StrictMode><App /></StrictMode>);
